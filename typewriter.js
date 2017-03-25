@@ -22,27 +22,33 @@ function Typewriter (element) {
 
     // Create a text node if this element doesn't already have one.
     this._textNode = null;
+    this._isTextNode = element.nodeType === Node.TEXT_NODE;
 
-    for (var i = 0; i < element.childNodes.length; i++) {
-        if (element.childNodes[i].nodeType == 3) {
-            _textNode = element.childNodes[i];
-            break;
-        }
+    if (this._isTextNode) {
+      this._textNode = element;
     }
+    else {
+      for (var i = 0; i < element.childNodes.length; i++) {
+          if (element.childNodes[i].nodeType == 3) {
+              _textNode = element.childNodes[i];
+              break;
+          }
+      }
 
-    if (!this._textNode) {
-        this._textNode = document.createTextNode("");
-        element.appendChild(this._textNode);
+      if (!this._textNode) {
+          this._textNode = document.createTextNode("");
+          element.appendChild(this._textNode);
+      }
+
+      // Create the caret.
+      this._caretElement = document.createElement("span");
+      this._caretTextNode = document.createTextNode("");
+      this._caretElement.appendChild(this._caretTextNode);
+      element.appendChild(this._caretElement);
+
+      this.setCaret("|");
+      this.setCaretPeriod(1000);
     }
-
-    // Create the caret.
-    this._caretElement = document.createElement("span");
-    this._caretTextNode = document.createTextNode("");
-    this._caretElement.appendChild(this._caretTextNode);
-    element.appendChild(this._caretElement);
-
-    this.setCaret("|");
-    this.setCaretPeriod(1000);
 
     // Initialize the delay distribution.
     this.setDelay(250, 100);
